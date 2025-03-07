@@ -1,17 +1,20 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import Navbar from "./components/Navbar/Navbar";
+import Sidebar from "./components/Sidebar/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
 
-const App: React.FC = () => {
+const App = () => {
   return (
-    <div>
-      <nav className="p-4 border-b">
-        <Link to="/stores" className="mr-4">Stores</Link>
-        <Link to="/skus" className="mr-4">SKUs</Link>
-        <Link to="/planning" className="mr-4">Planning</Link>
-        <Link to="/chart">Chart</Link>
-      </nav>
-      <AppRoutes />
+    <div className="flex">
+      {/* Sidebar */}
+      <Sidebar />
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <Navbar />
+        <div className="p-4">
+          <AppRoutes />
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,15 +1,14 @@
 import { Link } from "react-router-dom";
+import { FaBars, FaUserCircle } from "react-icons/fa";
 
 const Navbar = () => {
   return (
-    <nav className="bg-gray-800 text-white p-4 flex justify-between">
-      <div className="text-xl font-bold">GSynergy</div>
-      <div>
-        <Link to="/stores" className="mx-2">Stores</Link>
-        <Link to="/skus" className="mx-2">SKUs</Link>
-        <Link to="/planning" className="mx-2">Planning</Link>
-        <Link to="/chart" className="mx-2">Chart</Link>
+    <nav className="flex items-center justify-between bg-white shadow-md px-4 py-2">
+      <div className="flex items-center gap-4">
+          <img style={{width : '100px'}} src="/images/gsynergy-logo.svg" alt="" />
       </div>
+      <h1 className="text-xl font-semibold text-gray-800">Data Viewer App</h1>
+      <FaUserCircle className="text-gray-600 text-2xl cursor-pointer" />
     </nav>
   );
 };
