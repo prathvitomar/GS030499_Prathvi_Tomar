@@ -1,18 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface SKU {
-  id: string;
-  name: string;
-  price: number;
-  cost: number;
-}
-
-interface SKUState {
-  skus: SKU[];
-}
+import { SKU, SKUState } from "../types/skusTypes";
+import { skus } from "../data/skus";
 
 const initialState: SKUState = {
-  skus: [],
+  skus
 };
 
 const skuSlice = createSlice({
