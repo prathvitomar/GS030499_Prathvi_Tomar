@@ -6,8 +6,6 @@ interface AuthState {
   user: { name: string; password: string } | null;
 }
 
-const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,

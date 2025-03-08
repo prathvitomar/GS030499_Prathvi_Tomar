@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../app/store";
 import { ClientSideRowModelModule } from "ag-grid-community";
 import { Store } from "../types/storeTypes";
-import { addStore, removeStore, updateStore, reorderStores } from "../features/storeSlice";
+import { updateStore, reorderStores } from "../features/storeSlice";
 import { v4 as uuidv4 } from "uuid";
 import { Trash2 } from "lucide-react";
 

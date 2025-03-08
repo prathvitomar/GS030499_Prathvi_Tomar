@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../app/store";
 import { updatePlanningData } from "../features/planningSlice";
@@ -11,15 +11,6 @@ import "./styles.css";
 const Planning: React.FC = () => {
   const dispatch = useDispatch();
   const rowData = useSelector((state: RootState) => state.planning.data);
-
-  // Group weeks by months
-  const monthWeekMapping = useMemo(() => {
-    return {
-      January: ["W01", "W02", "W03", "W04"],
-      February: ["W05", "W06", "W07", "W08"],
-      March: ["W09", "W10", "W11", "W12"],
-    };
-  }, []);
 
   const columnDefs: ColDef[] = [
     { field: "storeId", headerName: "Store", rowGroup: true },
