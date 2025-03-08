@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import SignIn from '../components/SignIn/SignIn';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SignIn from "../components/SignIn/SignIn";
 
 function SignInPage() {
   const [formData, setFormData] = useState({

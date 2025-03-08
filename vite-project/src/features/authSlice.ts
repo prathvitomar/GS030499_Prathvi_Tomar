@@ -10,6 +10,7 @@ interface AuthState {
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  error: undefined,
 };
 
 const authSlice = createSlice({
@@ -20,14 +21,15 @@ const authSlice = createSlice({
       const { name, password } = action.payload;
 
       const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = storedUsers.find((user: { name: string; password: string }) => 
-        user.name === name && user.password === password
+      const user = storedUsers.find((u: { name: string; password: string }) => 
+        u.name === name && u.password === password
       );
 
       if (user) {
         state.isAuthenticated = true;
         state.user = user;
-        localStorage.setItem("currentUser", JSON.stringify(user)); 
+        state.error = undefined;  // Reset error on success
+        localStorage.setItem("currentUser", JSON.stringify(user));
       } else {
         state.error = "User doesn't exist! Please sign up.";
       }
@@ -35,11 +37,12 @@ const authSlice = createSlice({
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
+      state.error = undefined;
       localStorage.removeItem("currentUser");
     },
     register: (state, action: PayloadAction<{ name: string; password: string }>) => {
       const { name, password } = action.payload;
-      
+
       let users = JSON.parse(localStorage.getItem("users") || "[]");
 
       if (users.some((user: { name: string }) => user.name === name)) {
@@ -54,6 +57,7 @@ const authSlice = createSlice({
 
       state.isAuthenticated = true;
       state.user = newUser;
+      state.error = undefined;
     },
   },
 });

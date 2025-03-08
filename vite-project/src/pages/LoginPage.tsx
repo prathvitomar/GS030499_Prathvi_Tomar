@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login, selectAuth } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -20,17 +20,16 @@ const LoginPage: React.FC = () => {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     dispatch(login(formData));
-
-    // If login fails, navigate to signin
-    setTimeout(() => {
-      if (error) {
-        alert(error);
-        navigate("/signin");
-      } else if (isAuthenticated) {
-        navigate("/stores");
-      }
-    }, 100);
   }
+
+  // **Fix Navigation by using useEffect**
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/stores");
+    } else if (error) {
+      alert(error);
+    }
+  }, [isAuthenticated, error, navigate]);
 
   return (
     <Login
