@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "./features/authSlice";
 import { useLocation } from "react-router-dom";
+import { RootState } from "./app/store";
 import Navbar from "./components/Navbar/Navbar";
 import Sidebar from "./components/Sidebar/Sidebar";
 import AppRoutes from "./routes/AppRoutes";
@@ -9,13 +10,16 @@ import AppRoutes from "./routes/AppRoutes";
 const App = () => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.user); 
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("currentUser") || "null");
-    if (storedUser) {
-      dispatch(login(storedUser));
+    if (!user) {
+      const storedUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+      if (storedUser) {
+        dispatch(login(storedUser));
+      }
     }
-  }, [dispatch]);
+  }, [dispatch, user]);
 
   const isAuthPage = ["/login", "/signin"].includes(location.pathname);
   const isNotFoundPage = location.pathname === "/404";
