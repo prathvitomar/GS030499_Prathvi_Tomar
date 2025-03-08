@@ -4,6 +4,7 @@ import { RootState } from "../app/store";
 interface AuthState {
   isAuthenticated: boolean;
   user: { name: string; password: string } | null;
+  error?: string;
 }
 
 const initialState: AuthState = {
@@ -28,8 +29,7 @@ const authSlice = createSlice({
         state.user = user;
         localStorage.setItem("currentUser", JSON.stringify(user)); 
       } else {
-        alert("User doesn't exist! Redirecting to Sign-up.");
-        window.location.href = "/signin";
+        state.error = "User doesn't exist! Please sign up.";
       }
     },
     logout: (state) => {
@@ -43,8 +43,7 @@ const authSlice = createSlice({
       let users = JSON.parse(localStorage.getItem("users") || "[]");
 
       if (users.some((user: { name: string }) => user.name === name)) {
-        alert("User already exists! Please log in.");
-        window.location.href = "/login";
+        state.error = "User already exists! Please log in.";
         return;
       }
 
@@ -55,7 +54,6 @@ const authSlice = createSlice({
 
       state.isAuthenticated = true;
       state.user = newUser;
-      window.location.href = "/stores"; 
     },
   },
 });
