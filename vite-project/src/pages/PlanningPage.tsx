@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../app/store";
 import { updatePlanningData } from "../features/planningSlice";
@@ -6,15 +6,24 @@ import { AgGridReact } from "ag-grid-react";
 import { ColDef, CellValueChangedEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "./styles.css"; 
+import "./styles.css";
 
 const Planning: React.FC = () => {
   const dispatch = useDispatch();
   const rowData = useSelector((state: RootState) => state.planning.data);
 
+  // Group weeks by months
+  const monthWeekMapping = useMemo(() => {
+    return {
+      January: ["W01", "W02", "W03", "W04"],
+      February: ["W05", "W06", "W07", "W08"],
+      March: ["W09", "W10", "W11", "W12"],
+    };
+  }, []);
+
   const columnDefs: ColDef[] = [
-    { field: "storeId", headerName: "Store", sortable: true },
-    { field: "skuId", headerName: "SKU", sortable: true },
+    { field: "storeId", headerName: "Store", rowGroup: true },
+    { field: "skuId", headerName: "SKU", rowGroup: true },
     { field: "week", headerName: "Week", sortable: true },
     {
       field: "salesUnits",
@@ -24,12 +33,8 @@ const Planning: React.FC = () => {
         const newValue = Number(params.newValue) || 0;
         params.data.salesUnits = newValue;
 
-        // ✅ Recalculate Sales Dollars & GM Fields
-        const pricePerUnit = params.data.salesDollars / (params.data.salesUnits || 1);
-        const costPerUnit = params.data.costDollars;
-
-        params.data.salesDollars = newValue * pricePerUnit;
-        params.data.gmDollars = newValue * (pricePerUnit - costPerUnit);
+        params.data.salesDollars = newValue * params.data.price;
+        params.data.gmDollars = params.data.salesDollars - newValue * params.data.costDollars;
         params.data.gmPercentage = params.data.salesDollars
           ? (params.data.gmDollars / params.data.salesDollars) * 100
           : 0;
@@ -57,13 +62,21 @@ const Planning: React.FC = () => {
         "gm-orange": (params) => params.value > 5 && params.value < 10,
         "gm-red": (params) => params.value <= 5,
       },
-    },
+      cellStyle: (params) => {
+        if (params.value >= 40) return { backgroundColor: "#4caf50", color: "white" };
+        if (params.value >= 10) return { backgroundColor: "#ffeb3b", color: "black" };
+        if (params.value > 5) return { backgroundColor: "#ff9800", color: "black" };
+        return { backgroundColor: "#f44336", color: "white" };
+      },
+    }
+    
+    
   ];
 
   const onCellValueChanged = useCallback(
     (event: CellValueChangedEvent) => {
       dispatch(updatePlanningData(event.data));
-      event.api.refreshCells({ force: true }); 
+      event.api.refreshCells({ force: true });
     },
     [dispatch]
   );
