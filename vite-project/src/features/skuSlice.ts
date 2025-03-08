@@ -11,8 +11,8 @@ const skuSlice = createSlice({
   initialState,
   reducers: {
     addSKU: (state, action: PayloadAction<SKU>) => {
-      state.skus.push(action.payload);
-    },
+      state.skus.unshift(action.payload); // ✅ Adds SKU at the first position
+    },    
     removeSKU: (state, action: PayloadAction<string>) => {
       state.skus = state.skus.filter(sku => sku.id !== action.payload);
     },
