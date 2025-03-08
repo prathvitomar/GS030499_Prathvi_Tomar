@@ -1,7 +1,9 @@
 import React from "react";
 import { SignInProps } from "../../types/SignInProps";
+import { useNavigate } from "react-router-dom";
 
 const SignIn: React.FC<SignInProps> = ({ name, password, handleChange, handleSubmit }) => {
+  const navigate = useNavigate()
   return (
     <section className="bg-gray-50 dark:bg-gray-900 overflow-hidden">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -50,6 +52,13 @@ const SignIn: React.FC<SignInProps> = ({ name, password, handleChange, handleSub
               >
                 Sign Up
               </button>
+              <div className="flex items-center justify-between mt-4">
+                <a href="/login" className="text-sm text-gray-600 dark:text-gray-200 hover:text-gray-500">Already Have a Account ?</a>
+
+                <button onClick={()=> navigate("/login")} type="button" className="px-6 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+                    Log In
+                </button>
+            </div>
             </form>
           </div>
         </div>
