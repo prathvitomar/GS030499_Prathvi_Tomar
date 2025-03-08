@@ -1,42 +1,39 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../app/store";
+import { updatePlanningData } from "../features/planningSlice";
 import { AgGridReact } from "ag-grid-react";
-import { ColDef } from "ag-grid-community";
+import { ColDef, CellValueChangedEvent } from "ag-grid-community";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { CellStyle } from "ag-grid-community";
-
+import "./styles.css"; 
 
 const Planning: React.FC = () => {
-  const stores = useSelector((state: RootState) => state.stores.stores);
-  const skus = useSelector((state: RootState) => state.skus.skus);
-  
-  const [rowData, setRowData] = useState(
-    stores.flatMap(store => 
-      skus.map(sku => ({
-        store: store.name,  // Store name instead of object
-        sku: sku.name,
-        price: sku.price,
-        cost: sku.cost,
-        salesUnits: 0,
-      }))
-    )
-  );
-
+  const dispatch = useDispatch();
+  const rowData = useSelector((state: RootState) => state.planning.data);
 
   const columnDefs: ColDef[] = [
-    { field: "store", headerName: "Store", sortable: true },
-    { field: "sku", headerName: "SKU", sortable: true },
+    { field: "storeId", headerName: "Store", sortable: true },
+    { field: "skuId", headerName: "SKU", sortable: true },
+    { field: "week", headerName: "Week", sortable: true },
     {
       field: "salesUnits",
       headerName: "Sales Units",
       editable: true,
       valueSetter: (params) => {
-        params.data.salesUnits = Number(params.newValue) || 0;
-        params.data.salesDollars = params.data.salesUnits * params.data.price;
-        params.data.gmDollars = params.data.salesDollars - params.data.salesUnits * params.data.cost;
-        params.data.gmPercent = params.data.salesDollars ? (params.data.gmDollars / params.data.salesDollars) * 100 : 0;
+        const newValue = Number(params.newValue) || 0;
+        params.data.salesUnits = newValue;
+
+        // ✅ Recalculate Sales Dollars & GM Fields
+        const pricePerUnit = params.data.salesDollars / (params.data.salesUnits || 1);
+        const costPerUnit = params.data.costDollars;
+
+        params.data.salesDollars = newValue * pricePerUnit;
+        params.data.gmDollars = newValue * (pricePerUnit - costPerUnit);
+        params.data.gmPercentage = params.data.salesDollars
+          ? (params.data.gmDollars / params.data.salesDollars) * 100
+          : 0;
+
         return true;
       },
     },
@@ -51,25 +48,35 @@ const Planning: React.FC = () => {
       valueFormatter: (params) => `$${params.value.toFixed(2)}`,
     },
     {
-      field: "gmPercent",
+      field: "gmPercentage",
       headerName: "GM %",
       valueFormatter: (params) => `${params.value.toFixed(2)}%`,
-      cellStyle: (params): CellStyle => {
-        const value = params.value as number;
-        if (value >= 40) return { backgroundColor: "green", color: "white" };
-        if (value >= 10) return { backgroundColor: "yellow" };
-        if (value > 5) return { backgroundColor: "orange" };
-        return { backgroundColor: "red", color: "white" };
+      cellClassRules: {
+        "gm-green": (params) => params.value >= 40,
+        "gm-yellow": (params) => params.value >= 10 && params.value < 40,
+        "gm-orange": (params) => params.value > 5 && params.value < 10,
+        "gm-red": (params) => params.value <= 5,
       },
     },
   ];
-  
-  
+
+  const onCellValueChanged = useCallback(
+    (event: CellValueChangedEvent) => {
+      dispatch(updatePlanningData(event.data));
+      event.api.refreshCells({ force: true }); 
+    },
+    [dispatch]
+  );
 
   return (
     <div className="ag-theme-alpine h-screen p-4">
       <h1 className="text-xl font-bold mb-4">Planning</h1>
-      <AgGridReact rowData={rowData} columnDefs={columnDefs} domLayout="autoHeight" />
+      <AgGridReact
+        rowData={rowData}
+        columnDefs={columnDefs}
+        domLayout="autoHeight"
+        onCellValueChanged={onCellValueChanged}
+      />
     </div>
   );
 };

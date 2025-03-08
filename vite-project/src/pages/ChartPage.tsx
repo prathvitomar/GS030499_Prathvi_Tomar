@@ -1,65 +1,89 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../app/store";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  CartesianGrid,
+  ComposedChart,
+} from "recharts";
 
-interface Store {
-  id: string;
-  name: string;
-}
+import { chart } from "../data/chart";
 
 const Chart: React.FC = () => {
   const stores = useSelector((state: RootState) => state.stores.stores);
-  const skus = useSelector((state: RootState) => state.skus.skus);
 
-  // Initialize with the first store object, not a string
-  const [selectedStore, setSelectedStore] = useState<Store | null>(stores.length > 0 ? stores[0] : null);
+  const [selectedStore, setSelectedStore] = useState(
+    stores.length > 0 ? stores[0].id : ""
+  );
 
   const handleStoreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedId = e.target.value;
-    const store = stores.find((s) => s.id === selectedId) || null;
-    setSelectedStore(store);
+    setSelectedStore(e.target.value);
   };
-
-  const chartData = skus.map((sku) => {
-    const salesUnits = Math.floor(Math.random() * 100); // Placeholder for actual sales data
-    const salesDollars = salesUnits * sku.price;
-    const gmDollars = salesDollars - salesUnits * sku.cost;
-    const gmPercent = salesDollars ? (gmDollars / salesDollars) * 100 : 0;
-    return {
-      name: sku.name,
-      gmDollars,
-      gmPercent,
-    };
-  });
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Chart</h1>
+      <h1 className="text-xl font-bold mb-4">Gross Margin</h1>
+
+      {/* Store Dropdown */}
       <label className="block mb-2">
         Select Store:
         <select
           className="ml-2 p-1 border rounded"
-          value={selectedStore?.id || ""}
+          value={selectedStore}
           onChange={handleStoreChange}
         >
           {stores.map((store) => (
             <option key={store.id} value={store.id}>
-              {store.name}
+              {store.city}
             </option>
           ))}
         </select>
       </label>
+
+      {/* Chart Container */}
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <XAxis dataKey="name" />
-          <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
-          <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+        <ComposedChart
+          data={chart}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+          <XAxis dataKey="Week" />
+          <YAxis yAxisId="left" orientation="left" stroke="#4A90E2" />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            stroke="#E26A42"
+            tickFormatter={(value) => `${value.toFixed(0)}%`}
+          />
           <Tooltip />
           <Legend />
-          <Bar yAxisId="left" dataKey="gmDollars" fill="#8884d8" name="GM Dollars" />
-          <Bar yAxisId="right" dataKey="gmPercent" fill="#82ca9d" name="GM %" />
-        </BarChart>
+
+          <Bar
+            yAxisId="left"
+            dataKey="GM Dollars"
+            fill="#4A90E2"
+            name="GM Dollars"
+          />
+
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="GM %"
+            stroke="#E26A42"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+            name="GM %"
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
