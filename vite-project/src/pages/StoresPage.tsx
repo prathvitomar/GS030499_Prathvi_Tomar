@@ -8,7 +8,6 @@ import { RootState } from "../app/store";
 import { ClientSideRowModelModule } from "ag-grid-community";
 import { Store } from "../types/storeTypes"; 
 
-// Register required module
 ModuleRegistry.registerModules([ClientSideRowModelModule]);
 
 const Stores: React.FC = () => {

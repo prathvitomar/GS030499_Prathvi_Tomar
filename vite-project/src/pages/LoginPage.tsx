@@ -1,24 +1,28 @@
-import React, { useState } from 'react'
-import Login from '../components/Login/Login'
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../features/authSlice";
+import { useNavigate } from "react-router-dom";
+import Login from "../components/Login/Login";
 
-function LoginPage() {
-  const [formData, setFormData] = useState({
-    name : "",
-    password : ""
-  })
+const LoginPage: React.FC = () => {
+  const [formData, setFormData] = useState({ name: "", password: "" });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>){
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name] : e.target.value
-    }))
+      [e.target.name]: e.target.value,
+    }));
   }
 
-  return (
-    <>
-        <Login name={formData.name} password={formData.password} handleChange={handleChange}/>
-    </>
-  )
-}
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    dispatch(login(formData));
+    navigate("/stores");
+  }
 
-export default LoginPage
+  return <Login name={formData.name} password={formData.password} handleChange={handleChange} handleSubmit={handleSubmit} />;
+};
+
+export default LoginPage;
