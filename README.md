@@ -1,6 +1,8 @@
 # 📊 Data Viewer Progressive Web App  
 
-🚀 **Live Demo:** [Click Here]([https://gs-030499-prathvi-tomar-git-main-prathvitomars-projects.vercel.app/login](https://gs-030499-prathvi-tomar-git-main-prathvitomars-projects.vercel.app/login))  
+🚀 **Live Demo:** [Click Here](https://gs-030499-prathvi-tomar-git-main-prathvitomars-projects.vercel.app/login)
+
+
 
 ## 📌 Overview  
 This project is a **Data Viewer Progressive Web App** designed for **Store and SKU management**, **sales and margin planning**, and **interactive data visualization** using **AG-Grid and charts**.  
