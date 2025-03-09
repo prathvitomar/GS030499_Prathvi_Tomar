@@ -1,14 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { login, selectAuth } from "../features/authSlice";
+// import React, { useState } from "react";
+// import { useDispatch } from "react-redux";
+// import { login } from "../features/authSlice";
+// import { useNavigate } from "react-router-dom";
+// import Login from "../components/Login/Login";
+
+// const LoginPage: React.FC = () => {
+//   const [formData, setFormData] = useState({ name: "", password: "" });
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+
+//   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+//     setFormData((prev) => ({
+//       ...prev,
+//       [e.target.name]: e.target.value,
+//     }));
+//   }
+
+//   function handleSubmit(e: React.FormEvent) {
+//     e.preventDefault();
+//     dispatch(login(formData));
+//     navigate("/stores");
+//   }
+
+//   return <Login name={formData.name} password={formData.password} handleChange={handleChange} handleSubmit={handleSubmit} />;
+// };
+
+// export default LoginPage;
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../features/authSlice";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login/Login";
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({ name: "", password: "" });
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { error, isAuthenticated } = useSelector(selectAuth);
+  const navigate = useNavigate(); // ✅ Use React Router's navigate
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setFormData((prev) => ({
@@ -19,26 +54,10 @@ const LoginPage: React.FC = () => {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    dispatch(login(formData));
+    dispatch(login({ ...formData, navigate })); // ✅ Pass navigate function
   }
 
-  // **Fix Navigation by using useEffect**
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/stores");
-    } else if (error) {
-      alert(error);
-    }
-  }, [isAuthenticated, error, navigate]);
-
-  return (
-    <Login
-      name={formData.name}
-      password={formData.password}
-      handleChange={handleChange}
-      handleSubmit={handleSubmit}
-    />
-  );
+  return <Login name={formData.name} password={formData.password} handleChange={handleChange} handleSubmit={handleSubmit} />;
 };
 
 export default LoginPage;
